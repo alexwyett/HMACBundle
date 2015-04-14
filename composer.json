@@ -1,0 +1,17 @@
+{
+    "name": "aw/hmacbundle",
+    "description": "HMAC Bundle for Symfony2",
+    "homepage": "https://github.com/alexwyett/HMACBundle",
+    "license": "proprietary",
+    "type": "symfony-bundle",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "HMACBundle\\": ""
+        }
+    },
+    "target-dir": "HMACBundle"
+}
