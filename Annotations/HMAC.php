@@ -88,13 +88,13 @@ class HMAC
     /**
      * Role comparision function
      * 
-     * @param \TOCC\HMACBundle\Entity\ApiUser $user ApiUser
+     * @param \HMACBundle\Entity\ApiUser $user ApiUser
      * 
      * @throws APIException
      * 
      * @return boolean
      */
-    public function checkRoles(\TOCC\HMACBundle\Entity\ApiUser $user)
+    public function checkRoles(\HMACBundle\Entity\ApiUser $user)
     {
         // Check that the API key specified by the client has the 
         // required roles to access this endpoint
@@ -118,7 +118,7 @@ class HMAC
     /**
      * Return the expected parameters for the hmac hash
      *
-     * @throws \TOCC\HMACBundle\Exceptions\APIException
+     * @throws \HMACBundle\Exceptions\APIException
      * 
      * @return array
      */

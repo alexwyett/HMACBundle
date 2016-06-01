@@ -92,7 +92,7 @@ class ApiUserService
             throw new APIException('User already exists', -1, 400);
         }
             
-        $user = new \TOCC\HMACBundle\Entity\ApiUser();
+        $user = new \HMACBundle\Entity\ApiUser();
         $user->setApikey($key);
         $user->setApisecret($this->_getNewSecret());
         $user->setEmail($email);
@@ -227,7 +227,7 @@ class ApiUserService
      * 
      * @throws APIException
      * 
-     * @return \TOCC\HMACBundle\Entity\ApiUser
+     * @return \HMACBundle\Entity\ApiUser
      */
     private function _getApiUser($apikey)
     {

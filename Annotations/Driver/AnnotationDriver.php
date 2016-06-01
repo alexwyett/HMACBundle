@@ -70,7 +70,7 @@ class AnnotationDriver
      *
      * @param FilterControllerEvent $event Allows filtering of a controller
      *
-     * @throws \TOCC\HMACBundle\Exceptions\APIException
+     * @throws \HMACBundle\Exceptions\APIException
      * 
      * @return void
      */
@@ -157,7 +157,7 @@ class AnnotationDriver
     /**
      * Perform hmac validation
      * 
-     * @param \TOCC\HMACBundle\Annotations\HMAC           $hmac    HMAC Annotation
+     * @param \HMACBundle\Annotations\HMAC              $hmac    HMAC Annotation
      * @param \Symfony\Component\HttpFoundation\Request $request Symfony Request
      * 
      * @throws APIException

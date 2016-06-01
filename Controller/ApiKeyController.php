@@ -217,7 +217,7 @@ class ApiKeyController extends DefaultController
     /**
      * Return the user service
      * 
-     * @return \TOCC\HMACBundle\Services\ApiUserService
+     * @return \HMACBundle\Services\ApiUserService
      */
     private function _getUserService()
     {

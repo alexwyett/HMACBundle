@@ -60,7 +60,7 @@ class ApiUser
      *
      * @param string $apikey
      *
-     * @return \TOCC\HMACBundle\Entity\User
+     * @return \HMACBundle\Entity\User
      */
     public function setApikey($apikey)
     {
@@ -84,7 +84,7 @@ class ApiUser
      *
      * @param string $apisecret
      *
-     * @return \TOCC\HMACBundle\Entity\User
+     * @return \HMACBundle\Entity\User
      */
     public function setApisecret($apisecret)
     {
@@ -110,7 +110,7 @@ class ApiUser
      * 
      * @throws \Exception
      * 
-     * @return \TOCC\HMACBundle\Entity\User
+     * @return \HMACBundle\Entity\User
      */
     public function setEmail($email)
     {
@@ -138,7 +138,7 @@ class ApiUser
      * 
      * @param boolean $enabled Enabled boolean
      * 
-     * @return \TOCC\HMACBundle\Entity\User
+     * @return \HMACBundle\Entity\User
      */
     public function setEnabled($enabled)
     {
@@ -162,7 +162,7 @@ class ApiUser
      * 
      * @param string $role Role
      * 
-     * @return \TOCC\HMACBundle\Entity\User
+     * @return \HMACBundle\Entity\User
      */
     public function addRole($role)
     {
@@ -188,7 +188,7 @@ class ApiUser
      * 
      * @param array $roles User roles
      * 
-     * @return \TOCC\HMACBundle\Entity\ApiUser
+     * @return \HMACBundle\Entity\ApiUser
      */
     public function setRoles(array $roles)
     {
@@ -214,7 +214,7 @@ class ApiUser
      * 
      * @param string $secret Secret
      * 
-     * @return \TOCC\HMACBundle\Entity\ApiUser
+     * @return \HMACBundle\Entity\ApiUser
      */
     public function setSecret($secret)
     {
