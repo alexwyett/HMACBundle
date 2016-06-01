@@ -15,11 +15,13 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser',
+                array(
+                    'create_apiuser'
+                ),
                 'POST',
                 array(
                     'key' => 'alex',
-                    'email' => 'alex@carltonsoftware.co.uk'
+                    'email' => 'alex@tocc.co.uk'
                 )
             )
         );
@@ -41,7 +43,9 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser',
+                array(
+                    'create_apiuser'
+                ),
                 'POST',
                 $params
             )
@@ -61,7 +65,9 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser',
+                array(
+                    'list_apiusers'
+                ),
                 'GET',
                 array(),
                 false
@@ -81,7 +87,7 @@ class ApiUserControllerTest extends TestBase
      * @return void
      */
     public function testListApiUser(
-        $email = 'alex@carltonsoftware.co.uk',
+        $email = 'alex@tocc.co.uk',
         $roles = null,
         $enabled = true
     ) {
@@ -91,7 +97,12 @@ class ApiUserControllerTest extends TestBase
         
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser/alex',
+                array(
+                    'view_apiuser',
+                    array(
+                        'apikey' => 'alex'
+                    )
+                ),
                 'GET',
                 array(),
                 false
@@ -114,7 +125,12 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser/alex',
+                array(
+                    'update_apiuser',
+                    array(
+                        'apikey' => 'alex'
+                    )
+                ),
                 'PUT',
                 array(
                     'email' => 'alex@tocc.co.uk',
@@ -132,7 +148,7 @@ class ApiUserControllerTest extends TestBase
      * @param array   $params         Post Params
      * @param integer $expectedStatus Expected Exception status code
      * 
-     * @dataProvider getInvalidApiUserData
+     * @dataProvider getInvalidApiUserUpdateData
      * 
      * @return void
      */
@@ -140,7 +156,12 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser/alex',
+                array(
+                    'update_apiuser',
+                    array(
+                        'apikey' => 'alex'
+                    )
+                ),
                 'PUT',
                 $params
             )
@@ -158,7 +179,13 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser/alex/role/ADMIN',
+                array(
+                    'add_apiuserrole',
+                    array(
+                        'apikey' => 'alex',
+                        'role' => 'ADMIN'
+                    )
+                ),
                 'PUT'
             )
         );
@@ -167,7 +194,13 @@ class ApiUserControllerTest extends TestBase
         
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser/alex/role/ADMIN',
+                array(
+                    'delete_apiuserrole',
+                    array(
+                        'apikey' => 'alex',
+                        'role' => 'ADMIN'
+                    )
+                ),
                 'DELETE'
             )
         );
@@ -184,7 +217,12 @@ class ApiUserControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/apiuser/alex',
+                array(
+                    'delete_apiuser',
+                    array(
+                        'apikey' => 'alex'
+                    )
+                ),
                 'DELETE'
             )
         );
@@ -223,7 +261,24 @@ class ApiUserControllerTest extends TestBase
                     'key' => 'bla',
                     'email' => 'invalidEmail'
                 ),
-                400
+                500
+            )
+        );
+    }
+    
+    /**
+     * testUpdateApiUserException data provider
+     * 
+     * @return array
+     */
+    public function getInvalidApiUserUpdateData()
+    {
+        return array(
+            array(
+                'params' => array(
+                    'email' => 'invalidEmail'
+                ),
+                500
             )
         );
     }

@@ -129,6 +129,14 @@ class HMAC
             $request->request->all(),
             $request->query->all()
         );
+        
+        if (isset($params['APIKEY'])) {
+            $params['hmacKey'] = $params['APIKEY'];
+        }
+        
+        if (isset($params['hash'])) {
+            $params['hmacHash'] = $params['hash'];
+        }
 
         if (!isset($params['hmacKey']) || !isset($params['hmacHash'])) {
             // HMAC is required, but no details were provided
@@ -138,12 +146,14 @@ class HMAC
                 403
             );
         }
-                    
-        // Add route to parameters
-        $params['route'] = self::_getFullPath($request->getUri());
-                    
-        // Add method, i.e. GET, PUT
-        $params['method'] = $request->getRealMethod();
+        
+        if (!isset($params['APIKEY'])) {
+            // Add route to parameters
+            $params['route'] = self::_getFullPath($request->getUri());
+
+            // Add method, i.e. GET, PUT
+            $params['method'] = $request->getRealMethod();
+        }
         
         // Secret
         $params['secret'] = 'test';
@@ -165,6 +175,17 @@ class HMAC
      */
     public static function hash($params)
     {
+        if (isset($params['APIKEY'])) {
+            unset($params['hmacKey']);
+            unset($params['hash']);
+            unset($params['hmacHash']);
+            $params['APISECRET'] = $params['secret'];
+            unset($params['secret']);
+        } else {
+            unset($params['hmacHash']);
+        }
+        
+        ksort($params);
         $params = array_map('strval', $params);
         
         return hash('SHA256', json_encode($params), false);

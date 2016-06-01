@@ -49,6 +49,16 @@ class ApiKeyController extends DefaultController
             $hashParams
         );
         
+        if (isset($params['APIKEY'])) {
+            unset($hashParams['hash']);
+            unset($hashParams['hmacKey']);
+            unset($hashParams['hmacHash']);
+            $hashParams['APISECRET'] = $params['secret'];
+            unset($hashParams['secret']);
+        } else {
+            unset($hashParams['hmacHash']);
+        }
+        
         return array(
             'request' => $this->getRequest()->getUri(),
             'method' => $this->getRequest()->getRealMethod(),
@@ -62,7 +72,7 @@ class ApiKeyController extends DefaultController
     /**
      * List ApiUsers function
      * 
-     * @Route("/apiuser", name="list_apiuser", defaults={"_format" = "_json", "_filterable" = true})
+     * @Route("/apiuser", name="list_apiusers", defaults={"_format" = "_json", "_filterable" = true})
      * @Method("GET")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -76,7 +86,7 @@ class ApiKeyController extends DefaultController
     /**
      * List ApiUsers function
      * 
-     * @Route("/apiuser/{apikey}", defaults={"_format" = "_json"})
+     * @Route("/apiuser/{apikey}", name="view_apiuser", defaults={"_format" = "_json"})
      * @Method("GET")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -90,7 +100,7 @@ class ApiKeyController extends DefaultController
     /**
      * Create an api user
      * 
-     * @Route("/apiuser")
+     * @Route("/apiuser", name="create_apiuser")
      * @Method("POST")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -98,6 +108,16 @@ class ApiKeyController extends DefaultController
      */
     public function createApiUserAction()
     {
+        if (!$this->getFromRequest('key', null) 
+            || !$this->getFromRequest('email', null)
+        ) {
+            throw new \HMACBundle\Exceptions\APIException(
+                'Key/Email not supplied',
+                -1,
+                400
+            );
+        }
+        
         $user = $this->_getUserService()->createUser(
             $this->getFromRequest('key', null), 
             $this->getFromRequest('email', null)
@@ -120,7 +140,7 @@ class ApiKeyController extends DefaultController
     /**
      * Remove an api user
      * 
-     * @Route("/apiuser/{apikey}")
+     * @Route("/apiuser/{apikey}", name="delete_apiuser")
      * @Method("DELETE")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -135,7 +155,7 @@ class ApiKeyController extends DefaultController
     /**
      * Update an api user
      * 
-     * @Route("/apiuser/{apikey}")
+     * @Route("/apiuser/{apikey}", name="update_apiuser")
      * @Method("PUT")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -147,7 +167,7 @@ class ApiKeyController extends DefaultController
             $apikey, 
             array(
                 'email' => $this->getFromRequest('email', null),
-                'secret' => $this->getFromRequest('secret', null)
+                'apisecret' => $this->getFromRequest('secret', null)
             )
         );
         
@@ -157,7 +177,7 @@ class ApiKeyController extends DefaultController
     /**
      * Enable an api user
      * 
-     * @Route("/apiuser/{apikey}/enable")
+     * @Route("/apiuser/{apikey}/enable", name="enable_apiuser")
      * @Method("POST")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -172,7 +192,7 @@ class ApiKeyController extends DefaultController
     /**
      * Disable an api user
      * 
-     * @Route("/apiuser/{apikey}/disable")
+     * @Route("/apiuser/{apikey}/disable", name="disable_apiuser")
      * @Method("POST")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -187,7 +207,7 @@ class ApiKeyController extends DefaultController
     /**
      * Add a role to an api user
      * 
-     * @Route("/apiuser/{apikey}/role/{role}")
+     * @Route("/apiuser/{apikey}/role/{role}", name="add_apiuserrole")
      * @Method("PUT")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -202,7 +222,7 @@ class ApiKeyController extends DefaultController
     /**
      * Delete a role to an api user
      * 
-     * @Route("/apiuser/{apikey}/role/{role}")
+     * @Route("/apiuser/{apikey}/role/{role}", name="delete_apiuserrole")
      * @Method("DELETE")
      * @HMAC(public=false, roles="ADMIN")
      * 

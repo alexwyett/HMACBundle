@@ -29,21 +29,24 @@ class ApiUserService
      * 
      * @var array
      */
-    private $roles;
+    private $roles = array('USER', 'ADMIN');
 
 
     /**
      * Constructor
      *
-     * @param \Doctrine\ORM\EntityManager $em    The entity manager
-     * @param array                       $roles User Roles
+     * @param \Doctrine\ORM\EntityManager $em   The entity manager
+     * @param array                       $hmac Hmac settings
      * 
      * @return void
      */
-    public function __construct($em, $roles)
+    public function __construct($em, $hmac = array())
     {
         $this->em = $em;
-        $this->roles = $roles;
+        
+        if (isset($hmac['hmac_roles'])) {
+            $this->roles = $hmac['hmac_roles'];
+        }
     }
     
     /**
@@ -114,11 +117,13 @@ class ApiUserService
     public function updateUser($apikey, array $params)
     {
         $user = $this->_getApiUser($apikey);
-        foreach ($params as $key => $val) {
-            $func = 'set' . ucfirst($key);
-            if (method_exists($user, $func)) {
-                $user->$func($val);
-            }
+        
+        if (isset($params['email']) && $params['email']) {
+            $user->setEmail($params['email']);
+        }
+        
+        if (isset($params['secret']) && $params['secret']) {
+            $user->setSecret($params['secret']);
         }
         
         $this->em->persist($user);

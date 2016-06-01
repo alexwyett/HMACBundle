@@ -22,20 +22,7 @@ class HMACExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         
-        foreach ($config as $key => $val) {
-            $container->setParameter($this->getAlias() . '.' . $key, $val);
-        } 
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-    }
-    
-    /**
-     * 
-     * @return string
-     */
-    public function getAlias()
-    {
-        return 'hmac';
     }
 }

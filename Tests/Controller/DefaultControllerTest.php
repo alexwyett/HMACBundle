@@ -21,14 +21,16 @@ class DefaultControllerTest extends TestBase
     {
         extract(
             $this->doRequest(
-                '/v2/auth/debug',
+                array(
+                    'debug_apiuser'
+                ),
                 $method,
                 $params,
                 false
             )
         );
         
-        $this->assertEquals($result, $json->status);
+        $this->assertEquals($result, $status);
     }
     
     /**

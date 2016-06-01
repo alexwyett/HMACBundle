@@ -33,6 +33,17 @@ class TestBase extends WebTestCase
         $jsonVar = true
     ) {
         $client = static::createClient();
+        
+        if (is_array($path)) {
+            $path = $client->getContainer()->get(
+                'router'
+            )->generate(
+                $path[0],
+                isset($path[1]) ? $path[1] : array(),
+                false
+            );
+        }
+        
         $crawler = $client->request(
             $verb,
             $path,

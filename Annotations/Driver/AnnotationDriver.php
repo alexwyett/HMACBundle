@@ -46,22 +46,25 @@ class AnnotationDriver
      * 
      * @var boolean
      */
-    private $useHmac;
+    private $useHmac = false;
 
     /**
      * Create a new AnnotationDriver object
      *
-     * @param \Doctrine\Common\Annotations\Reader $reader          Annotation reader
-     * @param \Doctrine\ORM\EntityManager         $entityManager   EM
-     * @param boolean                             $useHmac         HMAC Parameter
+     * @param \Doctrine\Common\Annotations\Reader $reader        Annotation reader
+     * @param \Doctrine\ORM\EntityManager         $entityManager EM
+     * @param array                               $hmac          HMAC Settings
      * 
      * @return void
      */
-    public function __construct($reader, $entityManager, $useHmac = false)
+    public function __construct($reader, $entityManager, $hmac = array())
     {
         $this->reader = $reader;
         $this->entityManager = $entityManager;
-        $this->useHmac = $useHmac;
+        
+        if (isset($hmac['hmac'])) {
+            $this->useHmac = $hmac['hmac'];
+        }
     }
 
     /**
@@ -185,9 +188,6 @@ class AnnotationDriver
         // This is a private route, so HMAC is requred.  We'll test this against
         // our generated hash later
         $hash = $params['hmacHash'];
-
-        // Remove hash from params - we'll regenerate this again
-        unset($params['hmacHash']);
 
         // Calc hash
         $_hash = $hmac->hash($params);

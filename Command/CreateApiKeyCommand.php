@@ -43,6 +43,12 @@ class CreateApiKeyCommand extends ContainerAwareCommand
                         'email', 
                         InputArgument::REQUIRED, 
                         'The email address associated with the key'
+                    ),
+                    new InputArgument(
+                        'secret', 
+                        InputArgument::OPTIONAL, 
+                        'Optional secret',
+                        false
                     )
                 )
             )->setHelp(<<<EOT
@@ -66,6 +72,7 @@ EOT
         try {
             $apikey = $input->getArgument('apikey');
             $email = $input->getArgument('email');
+            $secret = $input->getArgument('secret');
 
             $em = $this->getContainer()->get('doctrine')->getManager();
             $userService = $this->getContainer()->get(
@@ -74,6 +81,10 @@ EOT
             
             $user = $userService->createUser($apikey, $email);
             $user->addRole('ADMIN');
+            
+            if (is_string($secret)) {
+                $user->setApisecret($secret);
+            }
             
             $em->persist($user);
             $em->flush();
