@@ -69,7 +69,7 @@ class AnnotationDriver
     {
         $this->reader = $reader;
         $this->entityManager = $entityManager;
-        $this->request = $request;
+        $this->request = $request->getCurrentRequest();
 
         if (isset($hmac['hmac'])) {
             $this->useHmac = $hmac['hmac'];
