@@ -29,21 +29,29 @@ class AnnotationDriver
 {
     /**
      * Annotation reader
-     * 
+     *
      * @var \Doctrine\Common\Annotations\Reader
      */
     private $reader;
-    
+
     /**
      * Entity manager
-     * 
+     *
      * @var \Doctrine\ORM\EntityManager
      */
     private $entityManager;
-    
+
+
+    /**
+     * The incoming request to be validated
+     *
+     * @var Symfony\Component\HttpFoundation\RequestStack;
+     */
+    private $request;
+
     /**
      * HMAC bool setting
-     * 
+     *
      * @var boolean
      */
     private $useHmac = false;
@@ -54,14 +62,15 @@ class AnnotationDriver
      * @param \Doctrine\Common\Annotations\Reader $reader        Annotation reader
      * @param \Doctrine\ORM\EntityManager         $entityManager EM
      * @param array                               $hmac          HMAC Settings
-     * 
+     *
      * @return void
      */
-    public function __construct($reader, $entityManager, $hmac = array())
+    public function __construct($reader, $entityManager, $request, $hmac = array())
     {
         $this->reader = $reader;
         $this->entityManager = $entityManager;
-        
+        $this->request = $request->getCurrentRequest();
+
         if (isset($hmac['hmac'])) {
             $this->useHmac = $hmac['hmac'];
         }
@@ -74,7 +83,7 @@ class AnnotationDriver
      * @param FilterControllerEvent $event Allows filtering of a controller
      *
      * @throws \HMACBundle\Exceptions\APIException
-     * 
+     *
      * @return void
      */
     public function onKernelController(FilterControllerEvent $event)
@@ -84,26 +93,25 @@ class AnnotationDriver
         if (!is_array($controller = $event->getController())) {
             return;
         }
-        
+
         $object = new \ReflectionObject($controller[0]);
         $method = $object->getMethod($controller[1]);
-        
+
         // Make sure that a symfony controller is being used
         if (!($controller[0] instanceof \Symfony\Bundle\FrameworkBundle\Controller\Controller)) {
             return;
         }
 
-        $request = $controller[0]->get('request');
         foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
             if ($annotation instanceof HMAC) {
-                
+
                 // If were using hmac and the route is marked
                 // as private, lets check to see if the right credentials have
                 // been provided
                 if ($this->useHmac && !$annotation->isPublic()) {
-                    $this->_hmacValidation($annotation, $request);
+                    $this->_hmacValidation($annotation, $this->request);
                 }
-                
+
             }
         }
     }
@@ -112,26 +120,26 @@ class AnnotationDriver
      * Kernel controller.  Handles all responses from a controller.
      *
      * @param FilterResponseEvent $event Allows filtering of controller responses
-     * 
+     *
      * @return void
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        
+
     }
 
     /**
      * Kernel controller.  Handles all responses from a controller.
      *
      * @param GetResponseForControllerResultEvent $event Allows filtering of controller views before response
-     * 
+     *
      * @return void
      */
     public function onKernelView(GetResponseForControllerResultEvent $event)
     {
         // Get returned data
         $data = $event->getControllerResult();
-        
+
         // If the controller response is filterable and there is a filter
         // string provided, then filter the $data array
         if ($event->getRequest()->get('_filterable', false)
@@ -142,12 +150,12 @@ class AnnotationDriver
                 $event->getRequest()->get('filter'),
                 $data
             );
-            
+
             if ($data === null) {
                 throw new APIException('Invalid filter used', -1);
             }
         }
-        
+
         // Check that the _json attribute is setand that the data is the
         // correct format
         if ($event->getRequest()->get('_format', '') === '_json') {
@@ -156,15 +164,15 @@ class AnnotationDriver
             $event->setResponse(new JsonResponse($data, $httpStatus));
         }
     }
-    
+
     /**
      * Perform hmac validation
-     * 
+     *
      * @param \HMACBundle\Annotations\HMAC              $hmac    HMAC Annotation
      * @param \Symfony\Component\HttpFoundation\Request $request Symfony Request
-     * 
+     *
      * @throws APIException
-     * 
+     *
      * @return void
      */
     private function _hmacValidation($hmac, $request)
@@ -192,12 +200,12 @@ class AnnotationDriver
         // Calc hash
         $_hash = $hmac->hash($params);
 
-        // Ensure the hash we calculated matches the 
+        // Ensure the hash we calculated matches the
         // hash sent by the client
         if ($_hash != $hash) {
             throw new APIException(
-                'HMAC Failed - hash mismatch', 
-                -1, 
+                'HMAC Failed - hash mismatch',
+                -1,
                 403
             );
         }
