@@ -11,9 +11,9 @@ Add new parameters for the two bundle settings:
 
 For example in parameters.yml:
 
-`
+```yml
 parameters:
     hmac: 
         hmac: true
         hmac_roles: ["USER", "ADMIN"]
-`
+```
